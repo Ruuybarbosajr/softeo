@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import IAppError from '../interfaces/IAppError';
-import AppError from '../utils/appError';
+import IAppError from '../../interfaces/IAppError';
+import AppError from '../../utils/appError';
 
 export default (error: Error | IAppError, _req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof AppError) {
