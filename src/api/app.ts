@@ -1,12 +1,14 @@
 import express from 'express';
 import routes from '../api/routes';
-import handleError from '../middlewares/handleError';
+import middlewares from './middlewares';
 
 const app = express();
 
 app.use(express.json());
 
 app.use('/login', routes.login);
+app.use('/client', routes.client);
 
-app.use(handleError);
+app.use(middlewares.handleError);
+
 export default app;
