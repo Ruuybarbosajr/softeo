@@ -10,4 +10,12 @@ export default {
     
     return repository.client.create(newClient);
   },
+
+  async readOne(id: string) {
+    const findUser = await repository.client.readOne(id);
+
+    if (!findUser) throw new AppError('Cliente não encontrado', 404);
+
+    return findUser;
+  }
 };

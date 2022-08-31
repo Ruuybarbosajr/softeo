@@ -1,4 +1,4 @@
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import server from '../src/api/app';
 import sinon from 'sinon'
@@ -6,7 +6,6 @@ import repository from '../src/database/Repository';
 import jwt from 'jsonwebtoken'
 import { adminMock } from './mocks/adminMock'
 chai.use(chaiHttp);
-const { expect } = chai;
 
 
 describe('Testa rota /login', () => {
