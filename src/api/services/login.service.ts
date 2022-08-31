@@ -1,16 +1,16 @@
-import Login from '../../database/models/Login';
+import repository from '../../database/Repository';
 import ILogin from '../../interfaces/ILogin';
-import appError from '../../middlewares/appError';
+import AppError from '../../utils/appError';
 import generateToken from '../../utils/generateToken';
 
 export default {
   async execute(data: ILogin) {
-    const findUser = await Login.execute(data);
+    const findAdmin = await repository.admin.execute(data);
 
-    if (!findUser) throw appError('Admin not found', 404);
+    if (!findAdmin) throw new AppError('Admin not found', 404);
 
-    const { password, username, id } = findUser;
-    if (password !== data.password) throw appError('Invalid fields', 400);
+    const { password, username, id } = findAdmin;
+    if (password !== data.password) throw new AppError('Invalid fields', 400);
 
     return generateToken({ username, id});
   }

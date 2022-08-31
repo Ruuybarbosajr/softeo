@@ -1,10 +1,10 @@
 import { Admin } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import fs from 'fs';
-import path from 'path';
+import 'dotenv';
 
 export default (payload: Pick<Admin, 'id' | 'username'>) => {
-  const jwtKey = fs.readFileSync(path.join(__dirname, '../jwt.evaluation.key'), { encoding: 'utf-8' });
+  const jwtKey = process.env.JWT_SECRET as jwt.Secret;
+
   const token = jwt.sign(payload, jwtKey);
   return token;
 };
