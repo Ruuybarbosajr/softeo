@@ -26,5 +26,11 @@ export default {
 
     const updatedClient = await service.client.update(id, { name, email, tel });
     return res.status(200).json(updatedClient);
+  },
+
+  async destroy(req: Request, res: Response) {
+    const { id } = req.params;
+    await service.client.destroy(id);
+    return res.status(204).end();
   }
 };

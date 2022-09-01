@@ -27,5 +27,10 @@ export default {
     await this.readOne(id);
 
     return repository.client.update(id, obj);
+  },
+
+  async destroy(id: string) {
+    await this.readOne(id);
+    await repository.client.destroy(id);
   }
 };

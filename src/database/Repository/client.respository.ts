@@ -31,5 +31,13 @@ export default {
       data: obj,
       where: { id }
     });
+  },
+
+  async destroy(id: string): Promise<void> {
+    await prisma.client.delete({
+      where: {
+        id
+      }
+    });
   }
 };
