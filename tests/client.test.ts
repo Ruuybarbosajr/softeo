@@ -320,3 +320,72 @@ describe('Testa rota /client/update/:id', () => {
     });
   });
 });
+
+describe('Testa rota client/delete/:id', () => {
+  describe('Em caso de sucesso', () => {
+    before(() => {
+      sinon.stub(repository.client, 'destroy').resolves()
+      sinon.stub(repository.client, 'readOne').resolves(clientMock);
+    });
+
+    after(() => {
+      (repository.client.destroy as sinon.SinonStub).restore();
+      (repository.client.readOne as sinon.SinonStub).restore();
+    });
+
+    it('Deve retornar um status 204', async () => {
+      const { status } = await chai
+        .request(server)
+        .delete('/client/delete/197c7ac9-1054-44c1-909b-725a0fc14454')
+        .set('Authorization', token);
+      
+      expect(status).to.be.equal(204);
+    });
+  });
+
+  describe('Em caso de falha', () => {
+    describe('Caso o token seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.client, 'destroy').resolves();
+        sinon.stub(repository.client, 'readOne').resolves();
+      });
+
+      after(() => {
+        (repository.client.destroy as sinon.SinonStub).restore();
+        (repository.client.readOne as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 401 e uma mensagem "Você não possui autorização"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .delete('/client/delete/197c7ac9-1054-44c1-909b-725a0fc14454')
+          .set('Authorization', 'tokeninvalido');
+      
+        expect(status).to.be.equal(401);
+        expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+
+    describe('Caso o cliente não esteja cadastrado', () => {
+      before(() => {
+        sinon.stub(repository.client, 'destroy').resolves();
+        sinon.stub(repository.client, 'readOne').resolves(null);
+      });
+  
+      after(() => {
+        (repository.client.readOne as sinon.SinonStub).restore();
+        (repository.client.destroy as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 404 e uma mensagem "Cliente não encontrado"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .delete('/client/delete/197c7ac9-1054-44c1-909b-725a0fc14455')
+          .set('Authorization', token);
+
+        expect(status).to.be.equal(404);
+        expect(message).to.be.equal('Cliente não encontrado');
+      });
+    });
+  });
+});
