@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http';
 import server from '../src/api/app';
 import sinon from 'sinon'
 import repository from '../src/database/Repository';
-import { newClientMock, clientMock, allClientMock } from './mocks/clientMock'
+import { newClientMock, clientMock, allClientMock, clientUpdatedMock } from './mocks/clientMock'
 import { adminMock } from './mocks/adminMock'
 import generateToken from '../src/utils/generateToken';
 chai.use(chaiHttp);
@@ -242,6 +242,80 @@ describe('Testa rota /client/all', () => {
       
         expect(status).to.be.equal(401);
         expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+  });
+});
+
+describe('Testa rota /client/update/:id', () => {
+  describe('Em caso de sucesso', () => {
+    
+    before(() => {
+      sinon.stub(repository.client, 'update').resolves(clientUpdatedMock)
+      sinon.stub(repository.client, 'readOne').resolves(clientMock);
+    });
+
+    after(() => {
+      (repository.client.update as sinon.SinonStub).restore();
+      (repository.client.readOne as sinon.SinonStub).restore();
+    });
+
+    it('Deve retornar um status 200 e o objeto atualizado', async () => {
+      const { status, body } = await chai
+        .request(server)
+        .put('/client/update/197c7ac9-1054-44c1-909b-725a0fc14454')
+        .set('Authorization', token)
+        .send(clientUpdatedMock);
+
+      expect(status).to.be.equal(200);
+      expect(body).to.deep.equal(clientUpdatedMock);
+    });
+  });
+
+  describe('Em caso de falha', () => {
+    describe('Caso o token seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.client, 'update').resolves();
+        sinon.stub(repository.client, 'readOne').resolves();
+      });
+  
+      after(() => {
+        (repository.client.update as sinon.SinonStub).restore();
+        (repository.client.readOne as sinon.SinonStub).restore();
+      });
+      
+      it('Deve retornar um status 401 e uma mensagem "Você não possui autorização"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .put('/client/update/197c7ac9-1054-44c1-909b-725a0fc14454')
+          .set('Authorization', 'tokeninvalido')
+          .send(clientUpdatedMock);
+      
+        expect(status).to.be.equal(401);
+        expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+    
+    describe('Caso o cliente não esteja cadastrado', () => {
+      before(() => {
+        sinon.stub(repository.client, 'update').resolves();
+        sinon.stub(repository.client, 'readOne').resolves(null);
+      });
+  
+      after(() => {
+        (repository.client.update as sinon.SinonStub).restore();
+        (repository.client.readOne as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 404 e uma mensagem "Cliente não encontrado"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .put('/client/update/197c7ac9-1054-44c1-909b-725a0fc14455')
+          .set('Authorization', token)
+          .send(clientUpdatedMock)
+
+        expect(status).to.be.equal(404);
+        expect(message).to.be.equal('Cliente não encontrado');
       });
     });
   });

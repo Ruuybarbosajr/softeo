@@ -25,4 +25,11 @@ export default {
   },
 
   async readAll(): Promise<Client[]> { return prisma.client.findMany(); },
+
+  async update(id: string, obj: Omit<Client, 'id'>): Promise<Client> {
+    return prisma.client.update({
+      data: obj,
+      where: { id }
+    });
+  }
 };

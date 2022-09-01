@@ -1,6 +1,7 @@
 import INewClient from '../../interfaces/INewClient';
 import repository from '../../database/Repository';
 import AppError from '../../utils/appError';
+import { Client } from '@prisma/client';
 
 
 export default {
@@ -21,4 +22,10 @@ export default {
   },
 
   async readAll() { return repository.client.readAll(); },
+
+  async update(id: string, obj: Omit<Client, 'id'>) {
+    await this.readOne(id);
+
+    return repository.client.update(id, obj);
+  }
 };
