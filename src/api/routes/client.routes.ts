@@ -12,18 +12,25 @@ router.post(
   controllers.client.create
 );
 
-router.get(
-  '/all',
-  middlewares.authToken,
-  controllers.client.readAll
-);
-
 router.put(
   '/update/:id',
   middlewares.authToken,
   middlewares.authId,
   middlewares.authBodyClient,
   controllers.client.update
+);
+
+router.delete(
+  '/delete/:id',
+  middlewares.authToken,
+  middlewares.authId,
+  controllers.client.destroy
+);
+
+router.get(
+  '/all',
+  middlewares.authToken,
+  controllers.client.readAll
 );
 
 router.get(
