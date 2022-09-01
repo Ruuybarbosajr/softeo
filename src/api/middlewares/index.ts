@@ -7,7 +7,7 @@ import authId from './authId';
 export default {
   authToken,
   handleError,
-  authBodyNewClient: authBodyClient.create,
+  authBodyClient,
   authBodyLogin,
   authId
 };

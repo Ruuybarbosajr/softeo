@@ -8,7 +8,7 @@ const router = Router();
 router.post(
   '/create',
   middlewares.authToken,
-  middlewares.authBodyNewClient,
+  middlewares.authBodyClient,
   controllers.client.create
 );
 
@@ -16,6 +16,14 @@ router.get(
   '/all',
   middlewares.authToken,
   controllers.client.readAll
+);
+
+router.put(
+  '/update/:id',
+  middlewares.authToken,
+  middlewares.authId,
+  middlewares.authBodyClient,
+  controllers.client.update
 );
 
 router.get(
