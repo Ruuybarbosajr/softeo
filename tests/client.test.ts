@@ -3,10 +3,14 @@ import chaiHttp from 'chai-http';
 import server from '../src/api/app';
 import sinon from 'sinon'
 import repository from '../src/database/Repository';
-import { newClientMock, clientMock } from './mocks/clientMock'
+import { newClientMock, clientMock, allClientMock } from './mocks/clientMock'
 import { adminMock } from './mocks/adminMock'
 import generateToken from '../src/utils/generateToken';
 chai.use(chaiHttp);
+
+const token = generateToken(
+  { id: adminMock.id, username: adminMock.username }
+);
 
 describe('Testa rota /client/create', () => {
   describe('Em caso de sucesso', () => {
@@ -42,7 +46,7 @@ describe('Testa rota /client/create', () => {
         sinon.stub(repository.client, 'readOne').resolves();
         sinon.stub(repository.client, 'create').resolves();
       });
-  
+
       after(() => {
         (repository.client.create as sinon.SinonStub).restore();
         (repository.client.readOne as sinon.SinonStub).restore();
@@ -114,9 +118,6 @@ describe('Testa rota /client/create', () => {
 });
 
 describe('Testa rota /client/:id', () => {
-  const token = generateToken(
-    { id: adminMock.id, username: adminMock.username }
-  );
 
   describe('Em caso de sucesso', () => {
     before(() => {
@@ -193,6 +194,50 @@ describe('Testa rota /client/:id', () => {
       it('Deve retornar um status 401 e uma mensagem "Você não possui autorização"', async () => {
         const { status, body: { message } } = await chai.request(server)
           .get('/client/197c7ac9-1054-44c1-909b-725a0fc14454')
+          .set('Authorization', 'tokeninvalido')
+      
+        expect(status).to.be.equal(401);
+        expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+  });
+});
+
+describe('Testa rota /client/all', () => {
+  describe('Em caso de sucesso', () => {
+    
+    before(() => {
+      sinon.stub(repository.client, 'readAll').resolves(allClientMock)
+    });
+
+    after(() => {
+      (repository.client.readAll as sinon.SinonStub).restore();
+    });
+
+    it('Deve retornar um status 200 e um array com todos os usuários', async () => {
+      const { status, body } = await chai
+        .request(server)
+        .get('/client/all')
+        .set('Authorization', token)
+
+      expect(status).to.be.equal(200)
+      expect(body).to.deep.equal(allClientMock)
+    });
+  });
+
+  describe('Em caso de falha', () => {
+    describe('Caso o token seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.client, 'readAll').resolves();
+      });
+  
+      after(() => {
+        (repository.client.readAll as sinon.SinonStub).restore();
+      });
+      
+      it('Deve retornar um status 401 e uma mensagem "Você não possui autorização"', async () => {
+        const { status, body: { message } } = await chai.request(server)
+          .get('/client/all')
           .set('Authorization', 'tokeninvalido')
       
         expect(status).to.be.equal(401);

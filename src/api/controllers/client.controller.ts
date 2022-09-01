@@ -12,5 +12,10 @@ export default {
     const { id } = req.params;
     const client = await service.client.readOne(id);
     return res.status(200).json(client);
+  },
+
+  async readAll(_req: Request, res: Response) {
+    const allClients = await service.client.readAll();
+    return res.status(200).json(allClients);
   }
 };

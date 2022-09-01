@@ -22,5 +22,7 @@ export default {
     return prisma.client.create({
       data: newClient
     });
-  }
+  },
+
+  async readAll(): Promise<Client[]> { return prisma.client.findMany(); },
 };
