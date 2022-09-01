@@ -12,4 +12,11 @@ router.post(
   controllers.client.create
 );
 
+router.get(
+  '/:id',
+  middlewares.authToken,
+  middlewares.authId,
+  controllers.client.readOne
+);
+
 export default router;
