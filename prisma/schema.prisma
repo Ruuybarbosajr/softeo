@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,44 +8,45 @@ datasource db {
 }
 
 model Client {
-  id String @id @default(uuid())
-  name String
-  email String @unique
-  tel String
+  id       String            @id @default(uuid())
+  name     String
+  email    String            @unique
+  tel      String
   services ServiceProvided[] @relation("client")
 
   @@map("clients")
 }
 
 model Service {
-  id String @id @default(uuid())
-  name String @unique
-  description String
-  price Float
-  clients ServiceProvided[] @relation("service")
+  id              String            @id @default(uuid())
+  name            String            @unique
+  price           Float
+  maxInstallments Int               @map("max_installments")
+  clients         ServiceProvided[] @relation("service")
+
   @@map("services")
 }
 
 model ServiceProvided {
-  id String @id @default(uuid())
-  client Client @relation("client", fields: [clientId], references: [id])
-  clientId String  @map("client_id")
-  service Service @relation("service", fields: [serviceId], references: [id])
-  serviceId String @map("service_id")
-  installmentsContracted Int @map("installments_contracted")
-  installmentsPaid Int @map("installments_paid")
-  createdAt DateTime @default(now()) @map("created_at")
-  obs String @default("")
+  id                     String   @id @default(uuid())
+  clientId               String   @map("client_id")
+  serviceId              String   @map("service_id")
+  installmentsContracted Int      @map("installments_contracted")
+  installmentsPaid       Int      @map("installments_paid")
+  createdAt              DateTime @default(now()) @map("created_at")
+  obs                    String   @default("")
+  client                 Client   @relation("client", fields: [clientId], references: [id])
+  service                Service  @relation("service", fields: [serviceId], references: [id])
 
+  @@index([clientId], map: "services_provided_client_id_fkey")
+  @@index([serviceId], map: "services_provided_service_id_fkey")
   @@map("services_provided")
 }
 
 model Admin {
-  id String @id @default(uuid())
+  id       String @id @default(uuid())
   username String @unique
   password String
 
   @@map("admin")
 }
-
-
