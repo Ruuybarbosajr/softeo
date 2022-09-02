@@ -28,3 +28,16 @@ export const allServiceMock: Service[] = [
     maxInstallments: 5,
   }
 ]
+
+export const serviceUpdatedMock: Service = {
+  id: '197c7ac9-1054-44c1-909b-725a0fc14454',
+  name: 'Limpeza',
+  price: 200.00,
+  maxInstallments: 6,
+}
+
+export const serviceUpdateMock: Omit<Service, 'id'> = {
+  name: 'Limpeza',
+  price: 200.00,
+  maxInstallments: 6,
+}

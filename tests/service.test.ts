@@ -3,7 +3,13 @@ import chaiHttp from 'chai-http';
 import server from '../src/api/app';
 import sinon from 'sinon'
 import repository from '../src/database/Repository';
-import { serviceMock, newServiceMock, allServiceMock } from './mocks/serviceMock'
+import {
+  serviceMock,
+  newServiceMock,
+  allServiceMock,
+  serviceUpdatedMock,
+  serviceUpdateMock
+} from './mocks/serviceMock'
 import { adminMock } from './mocks/adminMock'
 import generateToken from '../src/utils/generateToken';
 chai.use(chaiHttp);
@@ -228,6 +234,102 @@ describe('Testa rota /service/all', () => {
 
         expect(status).to.be.equal(401);
         expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+  });
+});
+
+describe('Testa rota /service/update/:id', () => {
+  describe('Em caso de sucesso', () => {
+    
+    before(() => {
+      sinon.stub(repository.service, 'update').resolves(serviceUpdatedMock)
+      sinon.stub(repository.service, 'readOne').resolves(serviceMock);
+    });
+
+    after(() => {
+      (repository.service.update as sinon.SinonStub).restore();
+      (repository.service.readOne as sinon.SinonStub).restore();
+    });
+
+    it('Deve retornar um status 200 e o objeto atualizado', async () => {
+      const { status, body } = await chai
+        .request(server)
+        .put('/service/update/197c7ac9-1054-44c1-909b-725a0fc14454')
+        .set('Authorization', token)
+        .send(serviceUpdateMock);
+
+      expect(status).to.be.equal(200);
+      expect(body).to.deep.equal(serviceUpdatedMock);
+    });
+  });
+
+  describe('Em caso de falha', () => {
+    describe('Caso o token seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.service, 'update').resolves();
+        sinon.stub(repository.service, 'readOne').resolves();
+      });
+  
+      after(() => {
+        (repository.service.update as sinon.SinonStub).restore();
+        (repository.service.readOne as sinon.SinonStub).restore();
+      });
+      
+      it('Deve retornar um status 401 e uma mensagem "Você não possui autorização"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .put('/service/update/197c7ac9-1054-44c1-909b-725a0fc14454')
+          .set('Authorization', 'tokeninvalido')
+          .send(serviceUpdatedMock);
+      
+        expect(status).to.be.equal(401);
+        expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+    
+    describe('Caso o service não esteja cadastrado', () => {
+      before(() => {
+        sinon.stub(repository.service, 'update').resolves();
+        sinon.stub(repository.service, 'readOne').resolves(null);
+      });
+  
+      after(() => {
+        (repository.service.update as sinon.SinonStub).restore();
+        (repository.service.readOne as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 404 e uma mensagem "Serviço não encontrado"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .put('/service/update/197c7ac9-1054-44c1-909b-725a0fc14455')
+          .set('Authorization', token)
+          .send(serviceUpdatedMock);
+
+        expect(status).to.be.equal(404);
+        expect(message).to.be.equal('Serviço não encontrado');
+      });
+    });
+
+    describe('Caso algum campo do body seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.service, 'readOne').resolves();
+        sinon.stub(repository.service, 'update').resolves();
+      });
+  
+      after(() => {
+        (repository.service.update as sinon.SinonStub).restore();
+        (repository.service.readOne as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 400 e a mensagem "Campos inválidos"', async () => {  
+        const { status, body: { message } } = await chai.request(server)
+          .put('/service/update/197c7ac9-1054-44c1-909b-725a0fc14455')
+          .set('Authorization', token)
+          .send({ ...serviceUpdateMock, name: '' });
+  
+        expect(status).to.be.equal(400);
+        expect(message).to.be.equal('Campos inválidos');
       });
     });
   });

@@ -3,7 +3,13 @@ import chaiHttp from 'chai-http';
 import server from '../src/api/app';
 import sinon from 'sinon'
 import repository from '../src/database/Repository';
-import { newClientMock, clientMock, allClientMock, clientUpdatedMock } from './mocks/clientMock'
+import {
+  newClientMock,
+  clientMock,
+  allClientMock,
+  clientUpdatedMock,
+  clientUpdateMock
+} from './mocks/clientMock'
 import { adminMock } from './mocks/adminMock'
 import generateToken from '../src/utils/generateToken';
 chai.use(chaiHttp);
@@ -253,7 +259,7 @@ describe('Testa rota /client/update/:id', () => {
         .request(server)
         .put('/client/update/197c7ac9-1054-44c1-909b-725a0fc14454')
         .set('Authorization', token)
-        .send(clientUpdatedMock);
+        .send(clientUpdateMock);
 
       expect(status).to.be.equal(200);
       expect(body).to.deep.equal(clientUpdatedMock);
@@ -304,6 +310,28 @@ describe('Testa rota /client/update/:id', () => {
 
         expect(status).to.be.equal(404);
         expect(message).to.be.equal('Cliente não encontrado');
+      });
+    });
+
+    describe('Caso algum campo do body seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.client, 'readOne').resolves();
+        sinon.stub(repository.client, 'update').resolves();
+      });
+  
+      after(() => {
+        (repository.client.readOne as sinon.SinonStub).restore();
+        (repository.client.update as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 400 e a mensagem "Campos inválidos"', async () => {
+        const { status, body: { message } } = await chai.request(server)
+          .put('/client/update/197c7ac9-1054-44c1-909b-725a0fc14455')
+          .set('Authorization', token)
+          .send({ ...clientUpdateMock, name: '' });
+  
+        expect(status).to.be.equal(400);
+        expect(message).to.be.equal('Campos inválidos');
       });
     });
   });
