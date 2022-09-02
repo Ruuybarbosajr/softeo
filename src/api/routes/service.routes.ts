@@ -12,6 +12,12 @@ router.post(
 );
 
 router.get(
+  '/all',
+  middlewares.authToken,
+  controllers.service.readAll
+);
+
+router.get(
   '/:id',
   middlewares.authToken,
   middlewares.authId,
