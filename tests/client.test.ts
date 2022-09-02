@@ -26,10 +26,6 @@ describe('Testa rota /client/create', () => {
     });
 
     it('Deve retornar um status 201 e o cliente criado', async () => {
-      const token = generateToken(
-        { id: adminMock.id, username: adminMock.username }
-      );
-
       const { status, body } = await chai.request(server)
         .post('/client/create')
         .set('Authorization', token)
@@ -75,10 +71,6 @@ describe('Testa rota /client/create', () => {
       });
 
       it('Deve retornar um status 400 e a mensagem "Campos inválidos"', async () => {
-        const token = generateToken(
-          { id: adminMock.id, username: adminMock.username }
-        );
-  
         const { status, body: { message } } = await chai.request(server)
           .post('/client/create')
           .set('Authorization', token)
@@ -101,10 +93,6 @@ describe('Testa rota /client/create', () => {
       });
 
       it('Deve retornar um status 409 e a mensagem "Cliente já está cadastrado"', async () => {
-        const token = generateToken(
-          { id: adminMock.id, username: adminMock.username }
-        );
-  
         const { status, body: { message } } = await chai.request(server)
           .post('/client/create')
           .set('Authorization', token)
