@@ -334,3 +334,72 @@ describe('Testa rota /service/update/:id', () => {
     });
   });
 });
+
+describe('Testa rota service/delete/:id', () => {
+  describe('Em caso de sucesso', () => {
+    before(() => {
+      sinon.stub(repository.service, 'destroy').resolves()
+      sinon.stub(repository.service, 'readOne').resolves(serviceMock);
+    });
+
+    after(() => {
+      (repository.service.destroy as sinon.SinonStub).restore();
+      (repository.service.readOne as sinon.SinonStub).restore();
+    });
+
+    it('Deve retornar um status 204', async () => {
+      const { status } = await chai
+        .request(server)
+        .delete('/service/delete/197c7ac9-1054-44c1-909b-725a0fc14454')
+        .set('Authorization', token);
+      
+      expect(status).to.be.equal(204);
+    });
+  });
+
+  describe('Em caso de falha', () => {
+    describe('Caso o token seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.service, 'destroy').resolves();
+        sinon.stub(repository.service, 'readOne').resolves();
+      });
+
+      after(() => {
+        (repository.service.destroy as sinon.SinonStub).restore();
+        (repository.service.readOne as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 401 e uma mensagem "Você não possui autorização"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .delete('/service/delete/197c7ac9-1054-44c1-909b-725a0fc14454')
+          .set('Authorization', 'tokeninvalido');
+      
+        expect(status).to.be.equal(401);
+        expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+
+    describe('Caso o serviço não esteja cadastrado', () => {
+      before(() => {
+        sinon.stub(repository.service, 'destroy').resolves();
+        sinon.stub(repository.service, 'readOne').resolves(null);
+      });
+  
+      after(() => {
+        (repository.service.readOne as sinon.SinonStub).restore();
+        (repository.service.destroy as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 404 e uma mensagem "Serviço não encontrado"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .delete('/service/delete/197c7ac9-1054-44c1-909b-725a0fc14455')
+          .set('Authorization', token);
+
+        expect(status).to.be.equal(404);
+        expect(message).to.be.equal('Serviço não encontrado');
+      });
+    });
+  });
+});
