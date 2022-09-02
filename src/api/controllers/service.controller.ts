@@ -13,4 +13,9 @@ export default {
     const service = await services.service.readOne(id);
     return res.status(200).json(service);
   },
+
+  async readAll(_req: Request, res: Response) {
+    const allServices = await services.service.readAll();
+    return res.status(200).json(allServices);
+  },
 };
