@@ -21,6 +21,12 @@ export const clientUpdatedMock: Client = {
   tel: '21999194372'
 }
 
+export const clientUpdateMock: Omit<Client, 'id'> = {
+  name: 'Ju Ju bileu',
+  email: 'judiscleisson@gmail.com',
+  tel: '21999194372'
+}
+
 export const allClientMock: Client[] = [
   {
     id: '197c7ac9-1054-44c1-909b-725a0fc14454',
