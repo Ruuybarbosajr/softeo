@@ -8,6 +8,7 @@ app.use(express.json());
 
 app.use('/login', routes.login);
 app.use('/client', routes.client);
+app.use('/service', routes.service);
 
 app.use(middlewares.handleError);
 
