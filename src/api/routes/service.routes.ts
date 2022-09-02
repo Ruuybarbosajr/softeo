@@ -19,6 +19,13 @@ router.put(
   controllers.service.update
 );
 
+router.delete(
+  '/delete/:id',
+  middlewares.authToken,
+  middlewares.authId,
+  controllers.service.destroy
+);
+
 router.get(
   '/all',
   middlewares.authToken,

@@ -27,4 +27,10 @@ export default {
     const updatedService = await services.service.update(id, { name, price, maxInstallments });
     return res.status(200).json(updatedService);
   },
+
+  async destroy(req: Request, res: Response) {
+    const { id } = req.params;
+    await services.service.destroy(id);
+    return res.status(204).end();
+  }
 };
