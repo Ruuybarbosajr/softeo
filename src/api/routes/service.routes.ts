@@ -11,6 +11,14 @@ router.post(
   controllers.service.create,
 );
 
+router.put(
+  '/update/:id',
+  middlewares.authToken,
+  middlewares.authId,
+  middlewares.authBodyService,
+  controllers.service.update
+);
+
 router.get(
   '/all',
   middlewares.authToken,

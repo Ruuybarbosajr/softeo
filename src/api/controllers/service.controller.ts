@@ -1,3 +1,4 @@
+import { Service } from '@prisma/client';
 import { Request, Response } from 'express';
 import services from '../services';
 
@@ -17,5 +18,13 @@ export default {
   async readAll(_req: Request, res: Response) {
     const allServices = await services.service.readAll();
     return res.status(200).json(allServices);
+  },
+
+  async update(req: Request, res: Response) {
+    const { name, price, maxInstallments } = req.body as Omit<Service, 'id'>;
+    const { id } = req.params;
+
+    const updatedService = await services.service.update(id, { name, price, maxInstallments });
+    return res.status(200).json(updatedService);
   },
 };
