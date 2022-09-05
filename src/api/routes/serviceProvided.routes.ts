@@ -4,6 +4,14 @@ import middlewares from '../middlewares';
 
 const router = Router();
 
+router.patch(
+  '/update/:id',
+  middlewares.authToken,
+  middlewares.authId,
+  middlewares.authBodyUpdateServiceProvided,
+  controllers.serviceProvided.update
+);
+
 router.post(
   '/create',
   middlewares.authToken,

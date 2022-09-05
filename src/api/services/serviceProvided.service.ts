@@ -5,6 +5,7 @@ import serviceClient from './client.service';
 import serviceService from './service.service';
 import IQueryParams from '../../interfaces/IQueryParams';
 import { Client, Service } from '@prisma/client';
+import IUpdateServiceProvided from '../../interfaces/IUpdateServiceProvided';
 
 async function verifyUserAndService(newServiceProvided: INewServiceProvided): 
 Promise<[Promise<Client>, Promise<Service>]> {
@@ -49,10 +50,10 @@ export default {
     });
   },
 
-  // async update(id: string, obj: Omit<ServiceProvided, 'id'>) {
-  //   await this.readOne(id);
-  //   return repository.serviceProvided.update(id, obj);
-  // },
+  async update(id: string, obj: IUpdateServiceProvided) {
+    await this.readOne(id);
+    return repository.serviceProvided.update(id, obj);
+  },
 
   // async destroy(id: string) {
   //   await this.readOne(id);
