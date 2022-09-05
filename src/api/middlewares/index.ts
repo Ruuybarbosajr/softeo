@@ -5,6 +5,7 @@ import authBodyLogin from './authBodyLogin';
 import authId from './authId';
 import authBodyService from './authBodyService';
 import authBodyServiceProvided from './authBodyServiceProvided';
+import authBodyUpdateServiceProvided from './authBodyUpdateServiceProvided';
 
 export default {
   authToken,
@@ -13,5 +14,6 @@ export default {
   authBodyService,
   authBodyLogin,
   authId,
-  authBodyServiceProvided
+  authBodyServiceProvided,
+  authBodyUpdateServiceProvided
 };

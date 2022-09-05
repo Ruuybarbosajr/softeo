@@ -1,6 +1,7 @@
-import { ServiceProvided, Prisma  } from '@prisma/client';
+import { Prisma  } from '@prisma/client';
 import INewServiceProvided from '../../interfaces/INewServiceProvided';
 import IServiceProvided from '../../interfaces/IServiceProvided';
+import IUpdateServiceProvided from '../../interfaces/IUpdateServiceProvided';
 import { prisma } from '../cliente';
 
 const SELECT_QUERY = {
@@ -36,7 +37,10 @@ export default {
     });
   },
 
-  async update(id: string, obj: Omit<ServiceProvided, 'id'>): Promise<IServiceProvided> {
+  async update(
+    id: string,
+    obj: IUpdateServiceProvided
+  ): Promise<IServiceProvided> {
     return prisma.serviceProvided.update({
       where: {
         id

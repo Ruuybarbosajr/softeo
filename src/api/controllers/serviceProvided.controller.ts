@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import INewServiceProvided from '../../interfaces/INewServiceProvided';
 import IQueryParams from '../../interfaces/IQueryParams';
+import IUpdateServiceProvided from '../../interfaces/IUpdateServiceProvided';
 import services from '../services';
 
 export default {
@@ -36,13 +37,12 @@ export default {
     return res.status(200).json(allServiceProvided);
   },
 
-  // async update(req: Request, res: Response) {
-  //   const { name, price, maxInstallments } = req.body as Omit<Service, 'id'>;
-  //   const { id } = req.params;
-
-  //   const updatedService = await services.service.update(id, { name, price, maxInstallments });
-  //   return res.status(200).json(updatedService);
-  // },
+  async update(req: Request, res: Response) {
+    const { installmentsPaid, obs } = req.body as IUpdateServiceProvided;
+    const { id } = req.params;
+    const updatedService = await services.serviceProvided.update(id, { installmentsPaid, obs });
+    return res.status(200).json(updatedService);
+  },
 
   // async destroy(req: Request, res: Response) {
   //   const { id } = req.params;
