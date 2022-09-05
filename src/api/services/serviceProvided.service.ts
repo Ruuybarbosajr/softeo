@@ -55,8 +55,8 @@ export default {
     return repository.serviceProvided.update(id, obj);
   },
 
-  // async destroy(id: string) {
-  //   await this.readOne(id);
-  //   await repository.serviceProvided.destroy(id);
-  // }
+  async destroy(id: string) {
+    await this.readOne(id);
+    await repository.serviceProvided.destroy(id);
+  }
 };

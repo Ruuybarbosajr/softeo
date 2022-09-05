@@ -458,3 +458,72 @@ describe('Testa rota /service-provided/update/:id', () => {
     });
   });
 });
+
+describe('Testa rota /service-provided/delete/:id', () => {
+  describe('Em caso de sucesso', () => {
+    before(() => {
+      sinon.stub(repository.serviceProvided, 'destroy').resolves()
+      sinon.stub(repository.serviceProvided, 'readOne').resolves(serviceProvidedMock);
+    });
+
+    after(() => {
+      (repository.serviceProvided.destroy as sinon.SinonStub).restore();
+      (repository.serviceProvided.readOne as sinon.SinonStub).restore();
+    });
+
+    it('Deve retornar um status 204', async () => {
+      const { status } = await chai
+        .request(server)
+        .delete('/service-provided/delete/197c7ac9-1054-44c1-909b-725a0fc14454')
+        .set('Authorization', token);
+      
+      expect(status).to.be.equal(204);
+    });
+  });
+
+  describe('Em caso de falha', () => {
+    describe('Caso o token seja inválido', () => {
+      before(() => {
+        sinon.stub(repository.serviceProvided, 'destroy').resolves();
+        sinon.stub(repository.serviceProvided, 'readOne').resolves();
+      });
+
+      after(() => {
+        (repository.serviceProvided.destroy as sinon.SinonStub).restore();
+        (repository.serviceProvided.readOne as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 401 e uma mensagem "Você não possui autorização"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .delete('/service-provided/delete/197c7ac9-1054-44c1-909b-725a0fc14454')
+          .set('Authorization', 'tokeninvalido');
+      
+        expect(status).to.be.equal(401);
+        expect(message).to.be.equal('Você não possui autorização');
+      });
+    });
+
+    describe('Caso o serviço prestado não esteja cadastrado', () => {
+      before(() => {
+        sinon.stub(repository.serviceProvided, 'destroy').resolves();
+        sinon.stub(repository.serviceProvided, 'readOne').resolves(null);
+      });
+  
+      after(() => {
+        (repository.serviceProvided.readOne as sinon.SinonStub).restore();
+        (repository.serviceProvided.destroy as sinon.SinonStub).restore();
+      });
+
+      it('Deve retornar um status 404 e uma mensagem "Serviço prestado não encontrado"', async () => {
+        const { status, body: { message } } = await chai
+          .request(server)
+          .delete('/service-provided/delete/197c7ac9-1054-44c1-909b-725a0fc14455')
+          .set('Authorization', token);
+
+        expect(status).to.be.equal(404);
+        expect(message).to.be.equal('Serviço prestado não encontrado');
+      });
+    });
+  });
+});

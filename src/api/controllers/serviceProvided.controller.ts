@@ -44,9 +44,9 @@ export default {
     return res.status(200).json(updatedService);
   },
 
-  // async destroy(req: Request, res: Response) {
-  //   const { id } = req.params;
-  //   await services.service.destroy(id);
-  //   return res.status(204).end();
-  //}
+  async destroy(req: Request, res: Response) {
+    const { id } = req.params;
+    await services.serviceProvided.destroy(id);
+    return res.status(204).end();
+  }
 };
