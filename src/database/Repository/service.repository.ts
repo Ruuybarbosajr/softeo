@@ -11,9 +11,9 @@ export default {
     });
   },
 
-  async create(newService: INewService): Promise<Service> {
+  async create(obj: INewService): Promise<Service> {
     return prisma.service.create({
-      data: newService
+      data: { ...obj }
     });
   },
 
@@ -21,7 +21,7 @@ export default {
 
   async update(id: string, obj: Omit<Service, 'id'>): Promise<Service> {
     return prisma.service.update({
-      data: obj,
+      data: { ...obj },
       where: { id }
     });
   },

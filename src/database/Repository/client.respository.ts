@@ -18,9 +18,9 @@ export default {
     });
   },
 
-  async create(newClient: INewClient): Promise<Client> {
+  async create(obj: INewClient): Promise<Client> {
     return prisma.client.create({
-      data: newClient
+      data: { ...obj }
     });
   },
 
@@ -28,7 +28,7 @@ export default {
 
   async update(id: string, obj: Omit<Client, 'id'>): Promise<Client> {
     return prisma.client.update({
-      data: obj,
+      data: { ...obj },
       where: { id }
     });
   },
