@@ -38,7 +38,10 @@ describe('Testa rota /client/create', () => {
         .send(newClientMock);
 
       expect(status).to.be.equal(201);
-      expect(body).to.deep.equal(clientMock);
+      expect(body).to.deep.equal({
+        ...clientMock,
+        services: clientMock.services.map((service) => ({ ...service, createdAt: service.createdAt.toISOString() }))
+      });
     });
   });
 
@@ -130,7 +133,15 @@ describe('Testa rota /client/:id', () => {
         .set('Authorization', token);
       
       expect(status).to.be.equal(200);
-      expect(body).to.deep.equal(clientMock);
+      expect(body).to.deep.equal({
+        ...clientMock,
+        services: clientMock.services.map((service) => {
+          return {
+            ...service,
+            createdAt: service.createdAt.toISOString()
+          }
+        })
+      });
     });
   });
 
@@ -215,7 +226,12 @@ describe('Testa rota /client/all', () => {
         .set('Authorization', token)
 
       expect(status).to.be.equal(200)
-      expect(body).to.deep.equal(allClientMock)
+      expect(body).to.deep.equal(allClientMock.map((client) => {
+        return {
+          ...client,
+          services: client.services.map((service) => ({ ...service, createdAt: service.createdAt.toISOString () }))
+        }
+      }))
     });
   });
 

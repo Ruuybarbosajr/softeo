@@ -4,6 +4,12 @@ import middlewares from '../middlewares';
 
 const router = Router();
 
+router.delete(
+  '/delete/:id',
+  middlewares.authToken,
+  controllers.serviceProvided.destroy
+);
+
 router.patch(
   '/update/:id',
   middlewares.authToken,
