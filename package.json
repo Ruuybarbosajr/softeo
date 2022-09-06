@@ -5,8 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
+    "db:up": "npx prisma db push --force-reset && npx prisma db seed",
     "test": "ts-mocha tests/*.test.ts --exit",
-    "test:coverage": "nyc npm run test"
+    "test:coverage": "nyc npm run test",
+    "start": "npm run db:up && npm run dev"
+  },
+  "prisma": {
+    "schema": "./src/database/prisma/schema.prisma",
+    "seed": "ts-node-dev ./src/database/prisma/seeders"
   },
   "repository": {
     "type": "git",
