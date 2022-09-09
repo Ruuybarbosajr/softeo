@@ -11,6 +11,7 @@ import {
   serviceProvidedUpdateMock,
   serviceProvidedUpdatedMock
 } from './mocks/serviceProvidedMock'
+import { installmentsReadAllMock } from './mocks/installmentsServiceProvidedMock'
 import { clientMock } from './mocks/clientMock'
 import { serviceMock } from './mocks/serviceMock'
 import generateToken from '../src/utils/generateToken';
@@ -27,10 +28,12 @@ describe('Testa rota /service-provided/create', () => {
       sinon.stub(repository.service, 'readOne').resolves(serviceMock);
       sinon.stub(repository.client, 'readOne').resolves(clientMock);
       sinon.stub(repository.serviceProvided, 'create').resolves(serviceProvidedMock);
+      sinon.stub(repository.installmentsServiceProvided, 'create').resolves({ count: 3})
     });
 
     after(() => {
       (repository.serviceProvided.create as sinon.SinonStub).restore();
+      (repository.installmentsServiceProvided.create as sinon.SinonStub).restore();
       (repository.service.readOne as sinon.SinonStub).restore();
       (repository.client.readOne as sinon.SinonStub).restore();
     });
@@ -238,11 +241,11 @@ describe('Testa rota /service-provided/all', () => {
   describe('Em caso de sucesso', () => {
     describe('Deve retornar todas os serviços prestados quando não houver querys', () => {
       before(() => {
-        sinon.stub(repository.serviceProvided, 'readAll').resolves(allServiceProvidedMock)
+        sinon.stub(repository.installmentsServiceProvided, 'readAll').resolves(installmentsReadAllMock)
       });
 
       after(() => {
-        (repository.serviceProvided.readAll as sinon.SinonStub).restore();
+        (repository.installmentsServiceProvided.readAll as sinon.SinonStub).restore();
       });
 
       it('Deve retornar um status 200 e um array com todos os serviços prestados', async () => {
@@ -252,9 +255,13 @@ describe('Testa rota /service-provided/all', () => {
           .set('Authorization', token)
   
         expect(status).to.be.equal(200)
-        expect(body).to.deep.equal(allServiceProvidedMock.map((serviceProvided) => {
+        expect(body).to.deep.equal(installmentsReadAllMock.map(({ serviceProvided }) => {
           return {
             ...serviceProvided,
+            installmentsServiceProvided: serviceProvided.installmentsServiceProvided.map((installments) => ({
+              ...installments,
+              dateInstallment: installments.dateInstallment.toISOString()
+            })),
             createdAt: serviceProvided.createdAt.toISOString()
           };
         }));
@@ -263,12 +270,11 @@ describe('Testa rota /service-provided/all', () => {
 
     describe('Deve retornar todas os serviços prestados do mês escolhido na query', () => {
       before(() => {
-        const [serviceProvidedSeptember] = allServiceProvidedMock;
-        sinon.stub(repository.serviceProvided, 'readAll').resolves([serviceProvidedSeptember])
+        sinon.stub(repository.installmentsServiceProvided, 'readAll').resolves(installmentsReadAllMock)
       });
 
       after(() => {
-        (repository.serviceProvided.readAll as sinon.SinonStub).restore();
+        (repository.installmentsServiceProvided.readAll as sinon.SinonStub).restore();
       });
 
       it('Deve retornar um status 200 e um array com todos os serviços prestados no mês de Setembro', async () => {
@@ -278,9 +284,15 @@ describe('Testa rota /service-provided/all', () => {
           .set('Authorization', token)
   
         expect(status).to.be.equal(200)
+        const { serviceProvided } = installmentsReadAllMock[0]
         expect(body).to.deep.equal([
-          { ...allServiceProvidedMock[0],
-            createdAt: allServiceProvidedMock[0].createdAt.toISOString()
+          {
+            ...serviceProvided,
+              createdAt: serviceProvided.createdAt.toISOString(),
+              installmentsServiceProvided: serviceProvided.installmentsServiceProvided.map((installments) => ({
+                ...installments,
+                dateInstallment: installments.dateInstallment.toISOString()
+              }))
           }
         ]);
       });
@@ -288,12 +300,11 @@ describe('Testa rota /service-provided/all', () => {
 
     describe('Deve retornar todas os serviços prestados do período escolhido na query', () => {
       before(() => {
-        const [,serviceProvidedJune] = allServiceProvidedMock;
-        sinon.stub(repository.serviceProvided, 'readAll').resolves([serviceProvidedJune])
+        sinon.stub(repository.installmentsServiceProvided, 'readAll').resolves(installmentsReadAllMock)
       });
 
       after(() => {
-        (repository.serviceProvided.readAll as sinon.SinonStub).restore();
+        (repository.installmentsServiceProvided.readAll as sinon.SinonStub).restore();
       });
 
       it('Deve retornar um status 200 e um array com todos os serviços prestados no período de 01/06/**** - 30/06/****', async () => {
@@ -306,9 +317,15 @@ describe('Testa rota /service-provided/all', () => {
           .set('Authorization', token)
   
         expect(status).to.be.equal(200)
+        const { serviceProvided } = installmentsReadAllMock[0]
         expect(body).to.deep.equal([
-          { ...allServiceProvidedMock[1],
-            createdAt: allServiceProvidedMock[1].createdAt.toISOString()
+          {
+            ...serviceProvided,
+              createdAt: serviceProvided.createdAt.toISOString(),
+              installmentsServiceProvided: serviceProvided.installmentsServiceProvided.map((installments) => ({
+                ...installments,
+                dateInstallment: installments.dateInstallment.toISOString()
+              }))
           }
         ]);
       });

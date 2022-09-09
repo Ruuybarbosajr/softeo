@@ -22,7 +22,27 @@ export default {
     if (newServiceProvided.installmentsContracted > service.maxInstallments) {
       throw new AppError('Número de parcelas indisponível');
     }
-    return repository.serviceProvided.create(newServiceProvided);
+
+    const serviceProvidedCreated = await repository.serviceProvided.create(newServiceProvided);
+    const { id, installmentsContracted, createdAt } = serviceProvidedCreated;
+
+    const date = {
+      month: new Date(createdAt).getMonth(),
+      year: new Date(createdAt).getFullYear(),
+      day: new Date(createdAt).getDay(),
+    };
+
+    const insertInstallments = Array.from({ length: installmentsContracted }).map((_, index) => {
+      return {
+        serviceProvidedId: id,
+        numberInstallment: index + 1,
+        dateInstallment: new Date(date.year, date.month + index, date.day),
+        priceInstallment: service.price / installmentsContracted
+      };
+    });
+
+    await repository.installmentsServiceProvided.create(insertInstallments);
+    return serviceProvidedCreated;
   },
 
   async readOne(id: string) {
@@ -34,20 +54,20 @@ export default {
   async readAll({ gte, lte, month }: IQueryParams) {
     if (month) {
       const fullYear = new Date().getFullYear();
-      return repository.serviceProvided.readAll({
-        createdAt: {
+      return (await repository.installmentsServiceProvided.readAll({
+        dateInstallment: {
           lte: new Date(fullYear, Number(month) + 1, 0),
           gte: new Date(fullYear, Number(month), 1),
         }
-      });
+      })).map(({ serviceProvided }) => serviceProvided);
     }
 
-    return repository.serviceProvided.readAll({
-      createdAt: {
+    return (await repository.installmentsServiceProvided.readAll({
+      dateInstallment: {
         lte,
         gte
       }
-    });
+    })).map(({ serviceProvided }) => serviceProvided);
   },
 
   async update(id: string, obj: IUpdateServiceProvided) {

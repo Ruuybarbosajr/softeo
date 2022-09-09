@@ -27,6 +27,18 @@ model Service {
   @@map("services")
 }
 
+model InstallmentsServiceProvided {
+  serviceProvided ServiceProvided @relation("serviceProvidedId", fields: [serviceProvidedId], references: [id])
+  serviceProvidedId String @map("service_provided_id")
+  numberInstallment Int @map("number_installment")
+  dateInstallment DateTime @map("date_installment")
+  priceInstallment Float @map("price_installment")
+
+  @@id([serviceProvidedId, numberInstallment])
+  @@map("installments_service_provided")
+
+}
+
 model ServiceProvided {
   id                     String   @id @default(uuid())
   clientId               String   @map("client_id")
@@ -37,6 +49,7 @@ model ServiceProvided {
   obs                    String   @default("")
   client                 Client   @relation("client", fields: [clientId], references: [id])
   service                Service  @relation("service", fields: [serviceId], references: [id])
+  installmentsServiceProvided InstallmentsServiceProvided[] @relation("serviceProvidedId")
 
   @@index([clientId], map: "services_provided_client_id_fkey")
   @@index([serviceId], map: "services_provided_service_id_fkey")
@@ -50,3 +63,4 @@ model Admin {
 
   @@map("admin")
 }
+
