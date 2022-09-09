@@ -11,7 +11,8 @@ const SELECT_QUERY = {
   installmentsContracted: true,
   installmentsPaid: true,
   createdAt: true,
-  obs: true
+  obs: true,
+  installmentsServiceProvided: true
 };
 
 export default {

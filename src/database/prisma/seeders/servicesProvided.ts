@@ -55,15 +55,17 @@ async function main() {
       installmentsContracted: 3,
       installmentsPaid: 1,
       createdAt: new Date(2022, 5, 15),
-      obs: '',
+      obs: 'Indicação de exodontia por tratamento ortodôntico',
     },
   ];
 
-  for (const ServiceProvided of servicesProvided) {
-    await prisma.serviceProvided.create({
-      data: { ...ServiceProvided },
-    });
-  }
+  setTimeout(async () => {
+    for (const ServiceProvided of servicesProvided) {
+      await prisma.serviceProvided.create({
+        data: { ...ServiceProvided },
+      });
+    }
+  }, 1000);
 }
 
 main()
