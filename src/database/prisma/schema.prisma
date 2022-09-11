@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,7 +18,7 @@ model Client {
 }
 
 model Service {
-  id              String            @id @default(uuid())
+  id              String            @id @default(uuid()) 
   name            String            @unique
   price           Float
   maxInstallments Int               @map("max_installments")
@@ -28,7 +28,7 @@ model Service {
 }
 
 model InstallmentsServiceProvided {
-  serviceProvided ServiceProvided @relation("serviceProvidedId", fields: [serviceProvidedId], references: [id])
+  serviceProvided ServiceProvided @relation("serviceProvidedId", fields: [serviceProvidedId], references: [id], onDelete: Cascade)
   serviceProvidedId String @map("service_provided_id")
   numberInstallment Int @map("number_installment")
   dateInstallment DateTime @map("date_installment")
@@ -41,14 +41,14 @@ model InstallmentsServiceProvided {
 
 model ServiceProvided {
   id                     String   @id @default(uuid())
-  clientId               String   @map("client_id")
-  serviceId              String   @map("service_id")
+  clientId               String   @map("client_id") @default("removed")
+  serviceId              String   @map("service_id") @default("removed")
   installmentsContracted Int      @map("installments_contracted")
   installmentsPaid       Int      @map("installments_paid")
   createdAt              DateTime @default(now()) @map("created_at")
   obs                    String   @default("")
-  client                 Client   @relation("client", fields: [clientId], references: [id])
-  service                Service  @relation("service", fields: [serviceId], references: [id])
+  client                 Client   @relation("client", fields: [clientId], references: [id], onDelete: Cascade)
+  service                Service  @relation("service", fields: [serviceId], references: [id], onDelete: Cascade)
   installmentsServiceProvided InstallmentsServiceProvided[] @relation("serviceProvidedId")
 
   @@map("services_provided")
