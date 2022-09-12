@@ -29,7 +29,7 @@ export default {
     const date = {
       month: new Date(createdAt).getMonth(),
       year: new Date(createdAt).getFullYear(),
-      day: new Date(createdAt).getDay(),
+      day: new Date(createdAt).getDate(),
     };
 
     const insertInstallments = Array.from({ length: installmentsContracted }).map((_, index) => {
